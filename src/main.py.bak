@@ -30,7 +30,7 @@ class BColors:
 config = Config()
 
 # Define the main function with an optional argument for the driver_type
-def main(driver_type: str = "firefox"):
+def main(driver_type: str = "chrome"):
     """
     Main function to perform automated tasks on the Presearch.org website.
     :param driver_type: Type of WebDriver to use, 'chrome' or 'firefox'.

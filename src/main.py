@@ -9,13 +9,12 @@ import fire
 import pyfiglet
 from loguru import logger
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
 
 # Import custom configuration module
@@ -43,7 +42,7 @@ def main(driver_type: str = "firefox"):
 
     # Configure the WebDriver based on the driver_type
     if driver_type == "chrome":
-        logger.debug("✨ Using chromer driver")
+        logger.debug("✨ Using chrome driver")
         options = webdriver.ChromeOptions()
         options.add_argument("--disable-notifications")
         options.add_argument(
@@ -51,20 +50,17 @@ def main(driver_type: str = "firefox"):
         )
         if config.get_env("CI") == "true":
             options.add_argument("--headless")
-        service = ChromeService(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=options)
+        driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
 
     if driver_type == "firefox":
         logger.debug("✨ Using firefox driver")
-        service = FirefoxService(GeckoDriverManager().install())
-        options = webdriver.FirefoxOptions()
+        options = FirefoxOptions()
+        options.headless = True
         options.add_argument("--disable-notifications")
         options.add_argument(
             "user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
         )
-        if config.get_env("CI") == "true":
-            options.add_argument("--headless")
-        driver = webdriver.Firefox(service=service, options=options)
+        driver = webdriver.Firefox(service=FirefoxService(executable_path=GeckoDriverManager().install()), options=options)
 
     logger.debug("✨ Start Browser launched!")
     driver.get("https://presearch.org/")
@@ -98,7 +94,7 @@ def main(driver_type: str = "firefox"):
         time.sleep(10)
 
     # Close the WebDriver
-    driver.close()
+    driver.quit()
 
 # Execute the main function when this script is run directly
 if __name__ == "__main__":

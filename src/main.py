@@ -33,7 +33,7 @@ config = Config()
 def main(driver_type: str = "firefox"):
     """
     Main function to perform automated tasks on the Presearch.org website.
-    :param driver_type: Type of WebDriver to use, 'chrome', 'firefox', or 'chromium'.
+    :param driver_type: Type of WebDriver to use, 'chrome' or 'firefox'.
     :return: None
     """
 
@@ -43,7 +43,7 @@ def main(driver_type: str = "firefox"):
 
     # Configure the WebDriver based on the driver_type
     if driver_type == "chrome":
-        logger.debug("✨ Using Chrome driver")
+        logger.debug("✨ Using chromer driver")
         options = webdriver.ChromeOptions()
         options.add_argument("--disable-notifications")
         options.add_argument(
@@ -54,8 +54,8 @@ def main(driver_type: str = "firefox"):
         service = ChromeService(ChromeDriverManager().install())
         driver = webdriver.Chrome(service=service, options=options)
 
-    elif driver_type == "firefox":
-        logger.debug("✨ Using Firefox driver")
+    if driver_type == "firefox":
+        logger.debug("✨ Using firefox driver")
         service = FirefoxService(GeckoDriverManager().install())
         options = webdriver.FirefoxOptions()
         options.add_argument("--disable-notifications")
@@ -65,22 +65,6 @@ def main(driver_type: str = "firefox"):
         if config.get_env("CI") == "true":
             options.add_argument("--headless")
         driver = webdriver.Firefox(service=service, options=options)
-
-    elif driver_type == "chromium":
-        logger.debug("✨ Using Chromium driver")
-        options = webdriver.ChromeOptions()
-        options.add_argument("--disable-notifications")
-        options.add_argument(
-            "user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
-        )
-        if config.get_env("CI") == "true":
-            options.add_argument("--headless")
-        service = ChromeService(ChromeDriverManager(chrome_type=ChromeDriverManager.CHROME).install())
-        driver = webdriver.Chrome(service=service, options=options)
-
-    else:
-        logger.error(f"Invalid driver type: {driver_type}")
-        return
 
     logger.debug("✨ Start Browser launched!")
     driver.get("https://presearch.org/")
